@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>GREEN API – Test Task</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8; 
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        h2 {
+            text-align: center;
+        }
+        input, textarea, button {
+            width: 100%;
+            margin: 6px 0;
+            padding: 8px;
+        }
+        textarea {
+            height: 180px;
+        }
+        button {
+            background: #2c7be5;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1a5dcc;
+        }
+        .row {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>GREEN-API Test Page</h2>
+
+    <div class="row">
+        <input id="idInstance" placeholder="idInstance">
+        <input id="apiToken" placeholder="ApiTokenInstance">
+    </div>
+
+    <div class="row">
+        <button onclick="getSettings()">getSettings</button>
+        <button onclick="getState()">getStateInstance</button>
+    </div>
+
+    <div class="row">
+        <input id="phone" placeholder="Телефон получателя (77007385838)">
+        <input id="message" placeholder="Сообщение">
+        <button onclick="sendMessage()">sendMessage</button>
+    </div>
+
+    <div class="row">
+        <input id="fileUrl" placeholder="URL файла">
+        <button onclick="sendFile()">sendFileByUrl</button>
+    </div>
+
+    <div class="row">
+        <textarea id="response" readonly placeholder="Ответ API..."></textarea>
+    </div>
+</div>
+
+<script>
+    function baseUrl(method) {
+        const id = document.getElementById('idInstance').value;
+        const token = document.getElementById('apiToken').value;
+        return `https://api.green-api.com/waInstance${id}/${method}/${token}`;
+    }
+
+    async function getSettings() {
+        const res = await fetch(baseUrl("getSettings"));
+        showResponse(await res.json());
+    }
+
+    async function getState() {
+        const res = await fetch(baseUrl("getStateInstance"));
+        showResponse(await res.json());
+    }
+
+    async function sendMessage() {
+        const body = {
+            chatId: document.getElementById('phone').value + "@c.us",
+            message: document.getElementById('message').value
+        };
+        const res = await fetch(baseUrl("sendMessage"), {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(body)
+        });
+        showResponse(await res.json());
+    }
+
+    async function sendFile() {
+        const body = {
+            chatId: document.getElementById('phone').value + "@c.us",
+            urlFile: document.getElementById('fileUrl').value,
+            fileName: "file"
+        };
+        const res = await fetch(baseUrl("sendFileByUrl"), {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(body)
+        });
+        showResponse(await res.json());
+    }
+
+    function showResponse(data) {
+        document.getElementById('response').value =
+            JSON.stringify(data, null, 2);
+    }
+</script>
+
+</body>
+</html>
